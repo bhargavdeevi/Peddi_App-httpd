@@ -1,2 +1,2 @@
 # Node_js__PTR
-PTR application using node.js
+Peddi application using basic HTML
