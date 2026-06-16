@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Peddi Cinema | Mass Booking - Raw Power Movie Tickets</title>
+    <!-- Google Fonts: cinematic impact -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #070503;
+            font-family: 'Montserrat', sans-serif;
+            color: #f0e6d2;
+            overflow-x: hidden;
+        }
+
+        /* Dark cinematic overlay with Peddi backdrop */
+        .cinema-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.88), rgba(10,5,2,0.96));
+            z-index: -2;
+        }
+
+        .cinema-bg::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.pinimg.com/736x/6e/2a/3b/6e2a3b8f9c4a5e7d8f9a0b1c2d3e4f5a6b7c8d9e.jpg');
+            background-size: cover;
+            background-position: center 20%;
+            opacity: 0.2;
+            filter: brightness(0.3) contrast(1.3) blur(1px);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 30px 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header - Peddi Style */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #d4af37;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #f5cb5c, #b8860b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.7);
+        }
+        .logo p {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: #e6c28f;
+        }
+        .header-badge {
+            background: rgba(0,0,0,0.65);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            border: 1px solid #d4af37;
+        }
+        .header-badge i {
+            color: #f5b81b;
+            margin-right: 8px;
+        }
+
+        /* HERO MOVIE SECTION */
+        .movie-hero {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 60px;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(6px);
+            border-radius: 48px;
+            padding: 25px 30px;
+            border: 1px solid rgba(212,175,55,0.5);
+        }
+        .movie-poster {
+            flex: 1;
+            min-width: 240px;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.6);
+            transition: transform 0.3s;
+        }
+        .movie-poster:hover {
+            transform: scale(1.02);
+        }
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .movie-info {
+            flex: 1.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .movie-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            letter-spacing: 2px;
+            color: #ffdd99;
+            text-shadow: 0 0 8px #b87c1a;
+        }
+        .movie-desc {
+            margin: 15px 0;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #e1cfaa;
+        }
+        .movie-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .meta-chip {
+            background: #1e1913;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .rating {
+            color: #f5b81b;
+        }
+        .book-now-btn {
+            background: linear-gradient(95deg, #aa7c2c, #d4af37);
+            border: none;
+            padding: 14px 32px;
+            width: fit-content;
+            font-weight: 800;
+            font-size: 1.2rem;
+            font-family: 'Anton', sans-serif;
+            border-radius: 60px;
+            color: #0a0a0a;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+            box-shadow: 0 5px 0 #6a4c1a;
+            transform: translateY(-2px);
+        }
+        .book-now-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #6a4c1a;
+        }
+
+        /* SHOWTIMES & BOOKING SECTION */
+        .booking-section {
+            background: rgba(12, 10, 8, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 44px;
+            padding: 30px 35px;
+            margin-top: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
+        .section-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 2rem;
+            border-left: 8px solid #d4af37;
+            padding-left: 18px;
+            margin-bottom: 25px;
+        }
+        .showtime-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .time-card {
+            background: #1f1b15;
+            border-radius: 32px;
+            padding: 16px 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #4a3a24;
+            min-width: 100px;
+        }
+        .time-card.selected {
+            background: #d4af37;
+            color: #0a0a0a;
+            border-color: #ffea9e;
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(212,175,55,0.6);
+        }
+        .time-card .time {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        .time-card .format {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .seat-map-area {
+            margin: 30px 0;
+        }
+        .screen {
+            background: #2a241e;
+            width: 80%;
+            margin: 0 auto 30px auto;
+            text-align: center;
+            padding: 12px;
+            border-radius: 100px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #d4af37;
+            box-shadow: 0 6px 0 #15100a;
+        }
+        .seats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .seat {
+            width: 48px;
+            height: 48px;
+            background: #2c241c;
+            border-radius: 16px 16px 8px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #6b5a42;
+            color: #ddccaa;
+        }
+        .seat.available:hover {
+            background: #4f3e28;
+            transform: scale(1.02);
+        }
+        .seat.selected {
+            background: #d4af37;
+            color: #0a0a0a;
+            border-color: #fff0b5;
+            box-shadow: 0 0 5px gold;
+        }
+        .seat.booked {
+            background: #5c4c34;
+            color: #987b4b;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            font-size: 0.8rem;
+        }
+        .booking-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+            border-top: 1px solid #362d21;
+            padding-top: 30px;
+        }
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-field label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #e6c89b;
+        }
+        .input-field input, .input-field select {
+            background: #1c1712;
+            border: 1px solid #5f4c2b;
+            padding: 12px;
+            border-radius: 20px;
+            color: #f5e2c1;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+        .confirm-btn {
+            background: linear-gradient(95deg, #b8860b, #e6bc3c);
+            border: none;
+            padding: 14px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            font-family: 'Anton', sans-serif;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            color: #0f0e0a;
+        }
+        .total-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: right;
+            color: #ffdf88;
+        }
+        @media (max-width: 850px) {
+            .container {
+                padding: 15px;
+            }
+            .booking-form {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            .movie-title {
+                font-size: 2.3rem;
+            }
+        }
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            border-top: 1px solid #2b241a;
+            padding-top: 25px;
+            font-size: 0.75rem;
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #0e0b08;
+            border-left: 6px solid #d4af37;
+            padding: 14px 26px;
+            border-radius: 60px;
+            font-weight: bold;
+            z-index: 2000;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            color: #ffeaac;
+            backdrop-filter: blur(20px);
+        }
+        .toast-notify.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+        i {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="cinema-bg"></div>
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <h1>PEDDI 🎬 CINEMAS</h1>
+            <p>Blockchain of Power | Mass Entertainment</p>
+        </div>
+        <div class="header-badge">
+            <i class="fas fa-ticket-alt"></i> RAW ACTION • NOW SHOWING
+        </div>
+    </div>
+
+    <!-- Movie Hero Panel -->
+    <div class="movie-hero">
+        <div class="movie-poster">
+            <!-- Peddi Movie High-Res Poster from internet -->
+            <img id="mainPoster" src="https://m.media-amazon.com/images/M/MV5BZmUyNjQ5NzItYjkyZC00YzE5LWEzOTMtYzQzMmI5NzA4ODQ5XkEyXkFqcGc@._V1_.jpg" 
+                 alt="Peddi Movie Poster Mass" onerror="this.src='https://www.thetelugufilmnagar.com/wp-content/uploads/2023/11/Peddi-Movie-Poster.jpg';">
+        </div>
+        <div class="movie-info">
+            <div class="movie-title">PEDDI <span style="font-size:2rem;">(2025)</span></div>
+            <div class="movie-desc">Raw & Ruthless • Mass Action Entertainer. Director's cut: "Power doesn't ask, it takes." Witness the fury on the big screen. Experience the most awaited Telugu blockbuster with jaw-dropping action.</div>
+            <div class="movie-meta">
+                <span class="meta-chip"><i class="fas fa-star rating"></i> 9.2 IMDb</span>
+                <span class="meta-chip"><i class="fas fa-language"></i> Telugu / Tamil / Hindi</span>
+                <span class="meta-chip"><i class="fas fa-clock"></i> 2h 48min</span>
+                <span class="meta-chip"><i class="fas fa-film"></i> 2D | IMAX</span>
+            </div>
+            <button id="heroBookBtn" class="book-now-btn"><i class="fas fa-bolt"></i> BOOK MASS TICKETS</button>
+        </div>
+    </div>
+
+    <!-- Booking Section with Showtimes & Seat Selection -->
+    <div class="booking-section" id="bookingSection">
+        <div class="section-title"><i class="fas fa-calendar-week"></i> SELECT SHOW & SEATS</div>
+        
+        <!-- Showtimes -->
+        <div class="showtime-grid" id="showtimeContainer">
+            <div class="time-card" data-time="10:30 AM" data-price="220">
+                <div class="time">10:30 AM</div>
+                <div class="format">Morning Mass</div>
+            </div>
+            <div class="time-card" data-time="2:00 PM" data-price="260">
+                <div class="time">2:00 PM</div>
+                <div class="format">Matinee Power</div>
+            </div>
+            <div class="time-card" data-time="6:30 PM" data-price="280">
+                <div class="time">6:30 PM</div>
+                <div class="format">Peddi Special</div>
+            </div>
+            <div class="time-card" data-time="9:45 PM" data-price="250">
+                <div class="time">9:45 PM</div>
+                <div class="format">Night Show</div>
+            </div>
+        </div>
+
+        <!-- Seat Map -->
+        <div class="seat-map-area">
+            <div class="screen"><i class="fas fa-tv"></i> PEDDI POWER SCREEN</div>
+            <div class="seats-container" id="seatsContainer"></div>
+            <div class="legend">
+                <span><i class="fas fa-square" style="color:#d4af37;"></i> Selected</span>
+                <span><i class="fas fa-square" style="color:#2c241c; border:1px solid #b8860b;"></i> Available</span>
+                <span><i class="fas fa-square" style="color:#5c4c34;"></i> Booked</span>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form" id="bookingForm">
+            <div class="input-field">
+                <label><i class="fas fa-user"></i> FULL NAME</label>
+                <input type="text" id="fullName" placeholder="Peddi Fan" value="">
+            </div>
+            <div class="input-field">
+                <label><i class="fas fa-phone"></i> MOBILE NUMBER</label>
+                <input type="tel" id="mobileNum" placeholder="9876543210">
+            </div>
+            <div class="input-field">
+                <label><i class="fas fa-city"></i> THEATRE</label>
+                <select id="theatreSelect">
+                    <option value="Peddi IMAX, Hyderabad">Peddi IMAX, Hyderabad</option>
+                    <option value="Mass Cinemas, Vizag">Mass Cinemas, Vizag</option>
+                    <option value="Rowdy Multiplex, Vijayawada">Rowdy Multiplex, Vijayawada</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label><i class="fas fa-tag"></i> NUMBER OF TICKETS</label>
+                <input type="number" id="ticketQty" min="1" max="8" value="2">
+            </div>
+            <div class="total-price full-width" id="totalPriceDisplay">
+                Total: ₹0
+            </div>
+            <button type="button" id="confirmBookingBtn" class="confirm-btn full-width"><i class="fas fa-ticket"></i> CONFIRM PEDDI BOOKING</button>
+        </div>
+    </div>
+    <footer>
+        <i class="fas fa-crown"></i> PEDDI CINEMAS — Official Blockbuster Ticket Booking | #PeddiMass | Experience the Power
+    </footer>
+</div>
+
+<div id="toastMsg" class="toast-notify"><i class="fas fa-check-circle"></i> Booking confirmed!</div>
+
+<script>
+    // -----------------------------------------
+    // Movie Booking Data (Peddi Theme)
+    // -----------------------------------------
+    let selectedTime = "6:30 PM";
+    let selectedTimePrice = 280;
+    let selectedSeats = [];     // store seat IDs like "D4"
+    let allSeats = [];          // array of seat objects
+    let bookedSeatsStatic = ["C3", "D7", "E2", "F4", "B5"]; // pre-booked example to mimic real system
+    
+    // Helper: update total display
+    function updateTotalPrice() {
+        const ticketQty = parseInt(document.getElementById('ticketQty').value) || 0;
+        const seatCount = selectedSeats.length;
+        // The user can select seats manually, but we also respect seat count. We'll sync: Max seats based on selection.
+        // But we will show price based on selected seats count OR ticket quantity, but ensure consistency: price = selectedSeats.length * selectedTimePrice
+        let actualCount = selectedSeats.length;
+        if(actualCount !== ticketQty) {
+            // we might auto sync? but we let the seat selection drive the price:
+            document.getElementById('ticketQty').value = actualCount;
+        }
+        const total = actualCount * selectedTimePrice;
+        document.getElementById('totalPriceDisplay').innerHTML = `<i class="fas fa-rupee-sign"></i> Total: ₹${total} (${actualCount} tickets x ₹${selectedTimePrice})`;
+        return total;
+    }
+
+    // Render seats grid (8 rows, 8 columns roughly)
+    function generateSeats() {
+        const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+        const cols = 8;
+        const container = document.getElementById('seatsContainer');
+        container.innerHTML = '';
+        allSeats = [];
+        for (let i = 0; i < rows.length; i++) {
+            for (let j = 1; j <= cols; j++) {
+                const seatId = rows[i] + j;
+                let status = 'available';
+                if (bookedSeatsStatic.includes(seatId)) {
+                    status = 'booked';
+                }
+                const seatObj = { id: seatId, status: status, row: rows[i], col: j };
+                allSeats.push(seatObj);
+            }
+        }
+        renderSeats();
+    }
+
+    function renderSeats() {
+        const container = document.getElementById('seatsContainer');
+        container.innerHTML = '';
+        allSeats.forEach(seat => {
+            const seatDiv = document.createElement('div');
+            seatDiv.classList.add('seat');
+            if (seat.status === 'booked') {
+                seatDiv.classList.add('booked');
+                seatDiv.innerText = seat.id;
+                seatDiv.style.cursor = 'not-allowed';
+            } else if (selectedSeats.includes(seat.id)) {
+                seatDiv.classList.add('selected');
+                seatDiv.innerText = seat.id;
+            } else {
+                seatDiv.classList.add('available');
+                seatDiv.innerText = seat.id;
+            }
+            if (seat.status !== 'booked') {
+                seatDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleSeatSelection(seat.id);
+                });
+            }
+            container.appendChild(seatDiv);
+        });
+        updateTotalPrice();
+    }
+
+    function toggleSeatSelection(seatId) {
+        const seatObj = allSeats.find(s => s.id === seatId);
+        if (!seatObj || seatObj.status === 'booked') return;
+        const index = selectedSeats.indexOf(seatId);
+        if (index === -1) {
+            // max 8 seats
+            if (selectedSeats.length >= 8) {
+                showToastMessage("Peddi says: Max 8 seats per booking!", true);
+                return;
+            }
+            selectedSeats.push(seatId);
+        } else {
+            selectedSeats.splice(index, 1);
+        }
+        // sync ticket quantity
+        document.getElementById('ticketQty').value = selectedSeats.length;
+        renderSeats();
+        updateTotalPrice();
+    }
+
+    // showtime selection
+    function initShowtimes() {
+        const timeCards = document.querySelectorAll('.time-card');
+        timeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                timeCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedTime = card.getAttribute('data-time');
+                selectedTimePrice = parseInt(card.getAttribute('data-price'));
+                // re-calc total
+                updateTotalPrice();
+                showToastMessage(`Show changed to ${selectedTime} | ₹${selectedTimePrice}/ticket`, false);
+            });
+            if(card.getAttribute('data-time') === "6:30 PM") {
+                card.classList.add('selected');
+            }
+        });
+    }
+
+    function showToastMessage(message, isError = false) {
+        const toast = document.getElementById('toastMsg');
+        toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-ticket'}"></i> ${message}`;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Validate and confirm booking
+    function confirmBooking() {
+        const name = document.getElementById('fullName').value.trim();
+        const mobile = document.getElementById('mobileNum').value.trim();
+        const theatre = document.getElementById('theatreSelect').value;
+        const ticketQtyInput = parseInt(document.getElementById('ticketQty').value);
+        
+        if (name === "") {
+            showToastMessage("Enter your name! Peddi wants to know the warrior.", true);
+            return;
+        }
+        if (mobile === "" || mobile.length < 8 || isNaN(mobile)) {
+            showToastMessage("Valid mobile number required for booking confirmation.", true);
+            return;
+        }
+        if (selectedSeats.length === 0) {
+            showToastMessage("Select at least one seat! Mass show needs audience.", true);
+            return;
+        }
+        if (selectedSeats.length !== ticketQtyInput) {
+            // sync
+            document.getElementById('ticketQty').value = selectedSeats.length;
+            showToastMessage(`Ticket count adjusted to ${selectedSeats.length} seats selected.`, false);
+        }
+        
+        const totalAmount = selectedSeats.length * selectedTimePrice;
+        const pnr = "PED" + Math.floor(Math.random() * 90000 + 10000) + "MASS";
+        const seatNumbers = selectedSeats.join(', ');
+        
+        // confirmation alert
+        alert(`🎟️ PEDDI BOOKING CONFIRMED 🎟️\n\n🔥 Name: ${name}\n📞 Mobile: ${mobile}\n🎬 Movie: PEDDI (Telugu Blockbuster)\n🏛️ Theatre: ${theatre}\n🕒 Showtime: ${selectedTime}\n💺 Seats: ${seatNumbers}\n💰 Total Amount: ₹${totalAmount}\n🎫 PNR: ${pnr}\n\n"Power packed experience awaits. Peddi style!"`);
+        
+        // Mark selected seats as booked permanently in local simulation
+        selectedSeats.forEach(seatId => {
+            const seatIndex = allSeats.findIndex(s => s.id === seatId);
+            if (seatIndex !== -1 && allSeats[seatIndex].status !== 'booked') {
+                allSeats[seatIndex].status = 'booked';
+                bookedSeatsStatic.push(seatId); // update static to prevent rebooking
+            }
+        });
+        selectedSeats = [];
+        document.getElementById('ticketQty').value = 1;
+        renderSeats();
+        updateTotalPrice();
+        // optional reset form
+        showToastMessage(`Booking Successful! PNR: ${pnr}`, false);
+        // scroll a bit
+    }
+
+    // sync seats and ticket qty change
+    function syncSeatsFromQuantity() {
+        let qty = parseInt(document.getElementById('ticketQty').value);
+        if (isNaN(qty)) qty = 1;
+        if (qty < 1) qty = 1;
+        if (qty > 8) qty = 8;
+        document.getElementById('ticketQty').value = qty;
+        if (selectedSeats.length !== qty) {
+            if (selectedSeats.length < qty) {
+                // try to auto select first available seats
+                let availableSeats = allSeats.filter(s => s.status === 'available' && !selectedSeats.includes(s.id));
+                for (let i = 0; i < (qty - selectedSeats.length); i++) {
+                    if (availableSeats[i]) selectedSeats.push(availableSeats[i].id);
+                    else break;
+                }
+            } else if (selectedSeats.length > qty) {
+                // remove extra seats from end
+                selectedSeats = selectedSeats.slice(0, qty);
+            }
+            renderSeats();
+        }
+        updateTotalPrice();
+    }
+
+    // Event listeners
+    document.getElementById('confirmBookingBtn').addEventListener('click', confirmBooking);
+    document.getElementById('ticketQty').addEventListener('change', syncSeatsFromQuantity);
+    document.getElementById('heroBookBtn').addEventListener('click', () => {
+        document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
+        showToastMessage("Select your show & choose seats 🔥", false);
+    });
+    
+    // Initialize everything
+    generateSeats();
+    initShowtimes();
+    updateTotalPrice();
+
+    // additional set default seat selection? set 2 seats as example default? but user friendly we don't select automatically; keep empty.
+    // ensure ticket quantity initial sync.
+    document.getElementById('ticketQty').value = 2;
+    // we will autopick first two available seats to show demo but not intrusive? Actually better let user pick, we show empty.
+    // However for better UX avoid auto selection: we keep empty selection.
+    selectedSeats = [];
+    renderSeats();
+    updateTotalPrice();
+
+    // For the poster fallback multiple
+    const poster = document.getElementById('mainPoster');
+    if(poster) {
+        poster.addEventListener('error', () => {
+            poster.src = "https://www.thetelugufilmnagar.com/wp-content/uploads/2023/11/Peddi-Movie-Poster.jpg";
+        });
+    }
+</script>
+</body>
+</html>
